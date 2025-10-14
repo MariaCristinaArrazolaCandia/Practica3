@@ -22,5 +22,7 @@ o	Web (Razor/Blazor o SPA) se conecta al Hub SignalR, recibe eventos en vivo y a
 8.	Manejo de errores / idempotencia
 o	Cada registro tiene uniqueId (guid o hash) → evita duplicados.
 o	Dead-letter para filas con error, logs y métricas.
+## Diagrama de arquitectura
+![Arquitectura integral (WebSocket/SignalR .NET)](assets/diagramaArquitectura.png)
 
 
