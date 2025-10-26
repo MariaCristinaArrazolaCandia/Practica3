@@ -1,0 +1,5 @@
+pymongo
+mysql-connector-python
+python-dotenv
+pandas
+numpy
