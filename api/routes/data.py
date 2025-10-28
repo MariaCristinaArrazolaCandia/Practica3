@@ -64,3 +64,18 @@ def save_upload_metadata(filename: str, rows_in: int, output_file: str):
         "mongo_id": str(insert_result.inserted_id),
         "stored": doc
     }
+@router.get("/mongo/uploads")
+def list_uploads():
+    """
+    Devuelve todos los documentos guardados en MongoDB por el worker.
+    """
+    docs = []
+    for doc in mongo_collection.find():
+        docs.append({
+            "id": str(doc.get("_id")),
+            "filename": doc.get("filename"),
+            "rows_in": doc.get("rows_in"),
+            "output_file": doc.get("output_file"),
+            "logged_at": doc.get("logged_at"),
+        })
+    return {"ok": True, "uploads": docs}

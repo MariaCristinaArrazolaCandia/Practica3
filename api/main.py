@@ -17,3 +17,6 @@ app.include_router(upload.router, prefix="/api")
 
 # Nuevo endpoint de status
 app.include_router(status.router, prefix="/api")
+
+# Nuevo endpoint de data
+app.include_router(data.router, prefix="/api")
