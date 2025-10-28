@@ -9,7 +9,7 @@ router = APIRouter(tags=["upload"])
 celery_app = Celery(
     "backend_producer",
     broker="amqp://guest:guest@rabbitmq:5672//",
-    backend=None
+    backend="rpc://"
 )
 
 # Ambas containers (backend y worker) montan ./data -> /data

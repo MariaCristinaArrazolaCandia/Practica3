@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import upload, status
+from routes import upload, status, data 
 
 app = FastAPI(
     title="ETL API",
