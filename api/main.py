@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import upload
+from routes import upload, status
 
 app = FastAPI(
     title="ETL API",
@@ -14,3 +14,6 @@ def health():
 
 # Montar el router donde está /upload
 app.include_router(upload.router, prefix="/api")
+
+# Nuevo endpoint de status
+app.include_router(status.router, prefix="/api")
