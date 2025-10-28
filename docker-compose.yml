@@ -1,3 +1,4 @@
+
 services:
   backend:
     build: ./api
@@ -21,15 +22,17 @@ services:
 
   worker:
     build: ./worker
-    command: python etl_worker.py
+    # 👇 AQUÍ EL CAMBIO IMPORTANTE:
+    command: celery -A tasks worker --loglevel=info
     volumes:
       - ./worker:/worker
       - ./data:/worker/data
     depends_on:
-      - backend
       - rabbitmq
       - mysql
       - mongo
+      # backend ya no es estrictamente necesario para que el worker inicie,
+      # pero si quieres lo puedes dejar. Lo quité porque Celery solo necesita RabbitMQ.
 
   mysql:
     image: mysql:8
@@ -51,8 +54,8 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5672:5672"     # broker AMQP que Celery va a usar
+      - "15672:15672"   # panel web de RabbitMQ
 
 volumes:
   mysql_data:

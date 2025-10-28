@@ -6,3 +6,5 @@ python-dotenv
 aiofiles
 pandas
 numpy
+celery
+python-multipart
