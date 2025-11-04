@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 from pymongo import MongoClient
 
+import os
 # --- MySQL ---
 def get_mysql_conn():
     """
@@ -22,10 +23,17 @@ def get_mysql_conn():
         return None
 
 # --- Mongo ---
-# Creamos el cliente global una sola vez
-mongo_client = MongoClient("mongodb://mongo:27017")
+# Lee la URI de la variable de entorno. Si no la encuentra, usa la de Docker por defecto.
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongo:27017")
 
-# Elegimos una base de datos lógica (puedes cambiar el nombre)
-mongo_db = mongo_client["etl_system"]  # por ejemplo "etl_system"
-# ejemplo de colección
-mongo_collection = mongo_db["uploads"]  # una colección para guardar info sobre archivos subidos
+# Creamos el cliente global una sola vez
+mongo_client = MongoClient(MONGO_URI)
+
+# --- Base de datos para la autenticación de usuarios ---
+# Apuntamos a la base de datos y colección correctas donde están los usuarios.
+auth_db = mongo_client["EMERGENTES_Monitoreo_GAMC"]
+mongo_collection = auth_db["users"]
+
+# --- Base de datos para el sistema ETL (si es diferente) ---
+etl_db = mongo_client["etl_system"]
+uploads_collection = etl_db["uploads"]

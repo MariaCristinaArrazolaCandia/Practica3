@@ -1,22 +1,26 @@
 from fastapi import FastAPI
-from routes import upload, status, data 
+from fastapi.middleware.cors import CORSMiddleware
+from routes import user
 
 app = FastAPI(
-    title="ETL API",
-    description="Backend FastAPI para subir CSV y disparar tareas ETL",
-    version="1.0.0",
+    title="API de Monitoreo GAMC",
+    description="API para la gestión de usuarios y datos del sistema de monitoreo.",
+    version="1.0.0"
 )
 
-# Ruta de salud básica
-@app.get("/")
-def health():
-    return {"status": "ok", "message": "backend funcionando"}
+# Orígenes permitidos para CORS. En producción, deberías ser más restrictivo.
+origins = [
+    "http://localhost:3000",  # El origen de tu frontend de React
+]
 
-# Montar el router donde está /upload
-app.include_router(upload.router, prefix="/api")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
+    allow_headers=["*"],  # Permite todas las cabeceras
+)
 
-# Nuevo endpoint de status
-app.include_router(status.router, prefix="/api")
-
-# Nuevo endpoint de data
-app.include_router(data.router, prefix="/api")
+# Incluir el router de usuarios con el prefijo /api
+# Esto hará que la ruta /users/login esté disponible en /api/users/login
+app.include_router(user.router, prefix="/api")
