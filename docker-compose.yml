@@ -2,24 +2,42 @@
 services:
   backend:
     build: ./api
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    env_file:
+      - ./api/.env
+    command: uvicorn main:app --host 0.0.0.0 --port 8070 --reload
     volumes:
       - ./api:/app
       - ./data:/data   
     ports:
-      - "8000:8000"
+      - "8070:8070"
     depends_on:
       - mysql
       - mongo
       - rabbitmq
 
   frontend:
-    build: ./frontend
+    # build: ./frontend
+    # ports:
+    #   - "3000:3000"
+    # depends_on: 
+     
+    #   - backend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend-react
     ports:
       - "3000:3000"
     depends_on:
       - backend
-
+    # ==========================================================
+    # MODIFICACIÓN CLAVE: VOLÚMENES PARA SINCRONIZACIÓN DE CÓDIGO
+    # ==========================================================
+    volumes:
+      # Sincroniza su código fuente (src, public, package.json)
+      - ./frontend:/frontend
+      # Excluye la carpeta node_modules para evitar errores de permisos/compatibilidad
+      - /frontend/node_modules
   worker:
     build: ./worker
     # 👇 AQUÍ EL CAMBIO IMPORTANTE:
