@@ -3,6 +3,10 @@ uvicorn
 pymongo
 bcrypt
 mysql-connector-python
+python-dotenv
+aiofiles
+pandas
+numpy
 celery
 pika
 passlib[bcrypt]
