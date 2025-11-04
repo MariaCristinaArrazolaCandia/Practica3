@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import user
+from routes import user, upload, status, data 
 
 app = FastAPI(
     title="API de Monitoreo GAMC",
@@ -24,3 +24,14 @@ app.add_middleware(
 # Incluir el router de usuarios con el prefijo /api
 # Esto hará que la ruta /users/login esté disponible en /api/users/login
 app.include_router(user.router, prefix="/api")
+
+# Montar el router donde está /upload
+app.include_router(upload.router, prefix="/api")
+
+# Nuevo endpoint de status
+app.include_router(status.router, prefix="/api")
+
+
+
+# Nuevo endpoint de data
+app.include_router(data.router, prefix="/api")
