@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pymongo
+mysql-connector-python
+python-dotenv
+aiofiles
+pandas
+numpy
+celery
+python-multipart
