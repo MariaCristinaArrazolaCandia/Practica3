@@ -11,16 +11,21 @@ app = FastAPI(
 # Orígenes permitidos para CORS. En producción, deberías ser más restrictivo.
 origins = [
     "http://localhost:3000",  # El origen de tu frontend de React
+    "http://127.0.0.1:3000",
 ]
+
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=origins,        # o ["*"] para pruebas
     allow_credentials=True,
-    allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
-    allow_headers=["*"],  # Permite todas las cabeceras
+    allow_methods=["*"],          # permite GET, POST, PUT, etc.
+    allow_headers=["*"],          # permite cualquier header (Content-Type, Authorization, etc.)
 )
-
+@app.get("/")
+def root():
+    return {"status": "ok", "message": "Backend Monitoreo GAMC funcionando"}
 # Incluir el router de usuarios con el prefijo /api
 # Esto hará que la ruta /users/login esté disponible en /api/users/login
 app.include_router(user.router, prefix="/api")

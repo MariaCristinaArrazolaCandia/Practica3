@@ -1,15 +1,17 @@
 import os
 import pandas as pd
 from celery import Celery
+import csv
 from datetime import datetime
 import mysql.connector
 from mysql.connector import Error
+from db_mysql import get_mysql_conn
 from pymongo import MongoClient
 
 celery_app = Celery(
     "etl_worker",
     broker="amqp://guest:guest@rabbitmq:5672//",
-    backend=None
+    backend="rpc://"
 )
 
 DATA_DIR = "/data"

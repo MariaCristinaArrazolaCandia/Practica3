@@ -16,15 +16,11 @@ services:
       - rabbitmq
 
   frontend:
-    # build: ./frontend
-    # ports:
-    #   - "3000:3000"
-    # depends_on: 
-     
-    #   - backend
+    
     build:
-      context: ./frontend
+      context: ./frontend     
       dockerfile: Dockerfile
+     # command: npm start
     container_name: frontend-react
     ports:
       - "3000:3000"
@@ -55,8 +51,10 @@ services:
   mysql:
     image: mysql:8
     environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: etl_system
+       MYSQL_ROOT_PASSWORD: admin
+       MYSQL_DATABASE: sensor_monitoring
+       MYSQL_USER: root
+       MYSQL_PASSWORD: root123
     ports:
       - "3307:3306"  # mapeo a 3307 para evitar conflictos si tienes MySQL local
     volumes:
