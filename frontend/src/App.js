@@ -5,6 +5,9 @@ import DashboardOperativo from './operativo/DashboardOperativo';
 import UserManagement from './ejecutivo/user management/UserManagement';
 import UserForm from './ejecutivo/user management/UserForm';
 
+
+import WebSocketTest from "./WebSocketTest";
+
 // URL base de tu backend. DEBES cambiar 'http://localhost:8080' por la URL/puerto real de tu servicio backend-1
 const API_BASE_URL = 'http://localhost:8070/api'; 
 
@@ -227,7 +230,14 @@ function App() {
         }
     };
 
-    return <div className="min-h-screen bg-gray-50 font-sans antialiased">{renderContent()}</div>;
+    return (
+  <div className="min-h-screen bg-gray-50 font-sans antialiased">
+    {renderContent()}
+
+    {/* WebSocket activo solo cuando el usuario está autenticado */}
+    {isAuthenticated && <WebSocketTest />}
+  </div>
+);
 }
 
 export default App;

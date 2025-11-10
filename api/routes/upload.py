@@ -3,6 +3,8 @@ from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from celery import Celery
+from routes.ws import manager # importar el manager de conexiones WebSocket
+
 
 router = APIRouter(tags=["upload"])
 
@@ -16,6 +18,8 @@ celery_app = Celery(
 DATA_DIR = "/data"
 INBOUND_DIR = os.path.join(DATA_DIR, "inbound")
 PROCESSED_DIR = os.path.join(DATA_DIR, "processed")
+
+
 
 os.makedirs(INBOUND_DIR, exist_ok=True)
 os.makedirs(PROCESSED_DIR, exist_ok=True)
@@ -39,6 +43,8 @@ async def upload_csv(file: UploadFile = File(...)):
         "worker.tasks.procesar_csv",
         args=[full_path]   # <-- /data/inbound/loquesea.csv
     )
+    
+    await manager.broadcast(f"Nuevo CSV cargado: {file.filename}")
 
     return JSONResponse({
         "message": "Archivo recibido y tarea enviada al worker.",
