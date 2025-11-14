@@ -1,4 +1,5 @@
 import React from 'react';
+import UploadManager from './UploadManager';
 
 function DashboardOperativo({ user, onLogout }) {
     return (
@@ -26,12 +27,8 @@ function DashboardOperativo({ user, onLogout }) {
             <main>
                 <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                     <div className="px-4 py-6 sm:px-0">
-                        <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 p-8 bg-white">
-                            <h2 className="text-xl font-semibold text-gray-800">Panel de Operaciones</h2>
-                            <p className="mt-2 text-gray-600">
-                                Aquí se mostrarían listas de tareas, alertas del sistema y herramientas de gestión de usuarios.
-                            </p>
-                        </div>
+                        {/* El componente de carga y monitoreo va aquí */}
+                        <UploadManager />
                     </div>
                 </div>
             </main>

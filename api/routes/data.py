@@ -1,81 +1,76 @@
 from fastapi import APIRouter, HTTPException
-from db import get_mysql_conn, mongo_collection
+from pymongo import MongoClient
+import mysql.connector
+from mysql.connector import Error
+import json
+from decimal import Decimal
 
-router = APIRouter(tags=["data"])
+router = APIRouter(prefix="/data", tags=["Data"])
 
-@router.get("/mysql/ping")
-def mysql_ping():
-    """
-    Ejemplo simple: leer datos desde MySQL.
-    Puedes cambiar esto para leer tu propia tabla.
-    """
-    conn = get_mysql_conn()
-    if conn is None:
-        raise HTTPException(status_code=500, detail="No se pudo conectar a MySQL")
+# --- Conexión a MongoDB ---
+client = MongoClient("mongodb://mongo:27017")
+db = client["EMERGENTES_Monitoreo_GAMC"]
 
+# --- Conexión a MySQL ---
+def get_mysql_conn():
     try:
-        cursor = conn.cursor()
-        # Creamos tabla de ejemplo si no existe
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS upload_logs (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                filename VARCHAR(255),
-                rows_in INT,
-                processed_at DATETIME
-            )
-        """)
-        conn.commit()
+        return mysql.connector.connect(
+            host="mysql",
+            port=3306,
+            user="root",
+            password="root123",
+            database="etl_system"
+        )
+    except Error as e:
+        print("Error conectando a MySQL desde API:", e)
+        return None
 
-        # Leemos todas las filas
-        cursor.execute("SELECT id, filename, rows_in, processed_at FROM upload_logs ORDER BY id DESC")
-        rows = cursor.fetchall()
+def default_serializer(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError(f"Type {type(obj)} not serializable")
 
-        # Convertimos a objetos JSON-friendly
-        result = [
-            {
-                "id": r[0],
-                "filename": r[1],
-                "rows_in": r[2],
-                "processed_at": r[3].isoformat() if r[3] else None,
-            }
-            for r in rows
-        ]
-
-        return {"ok": True, "data": result}
-
+def fetch_query(query: str):
+    """Ejecuta una consulta SELECT y devuelve los resultados como una lista de diccionarios."""
+    conn = get_mysql_conn()
+    if not conn:
+        raise HTTPException(status_code=503, detail="No se pudo conectar a la base de datos MySQL.")
+    
+    try:
+        cursor = conn.cursor(dictionary=True) # Devuelve filas como diccionarios
+        cursor.execute(query)
+        results = cursor.fetchall()
+        # Serializar tipos de datos no estándar como Decimal
+        return json.loads(json.dumps(results, default=default_serializer))
+    except Error as e:
+        raise HTTPException(status_code=500, detail=f"Error en la consulta a la base de datos: {e}")
     finally:
-        conn.close()
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
 
-
-@router.post("/mongo/upload-meta")
-def save_upload_metadata(filename: str, rows_in: int, output_file: str):
-    """
-    Guarda metadata de un archivo procesado en Mongo.
-    """
-    doc = {
-        "filename": filename,
-        "rows_in": rows_in,
-        "output_file": output_file
-    }
-    insert_result = mongo_collection.insert_one(doc)
-
-    return {
-        "ok": True,
-        "mongo_id": str(insert_result.inserted_id),
-        "stored": doc
-    }
 @router.get("/mongo/uploads")
-def list_uploads():
-    """
-    Devuelve todos los documentos guardados en MongoDB por el worker.
-    """
-    docs = []
-    for doc in mongo_collection.find():
-        docs.append({
-            "id": str(doc.get("_id")),
-            "filename": doc.get("filename"),
-            "rows_in": doc.get("rows_in"),
-            "output_file": doc.get("output_file"),
-            "logged_at": doc.get("logged_at"),
-        })
-    return {"ok": True, "uploads": docs}
+def get_mongo_uploads():
+    coll = db["uploads"]
+    items = list(coll.find({}, {"_id": 0}))
+    return items
+
+@router.get("/air-quality")
+def get_air_quality_data():
+    """Obtiene los últimos 10 registros de calidad del aire."""
+    query = "SELECT * FROM air_quality_measurements ORDER BY id DESC LIMIT 10"
+    return fetch_query(query)
+
+@router.get("/sound")
+def get_sound_data():
+    """Obtiene los últimos 10 registros de sonido."""
+    query = "SELECT * FROM sound_measurements ORDER BY id DESC LIMIT 10"
+    return fetch_query(query)
+
+@router.get("/buried")
+def get_buried_data():
+    """Obtiene los últimos 10 registros de sensores soterrados."""
+    query = "SELECT * FROM buried_measurements ORDER BY id DESC LIMIT 10"
+    return fetch_query(query)
+

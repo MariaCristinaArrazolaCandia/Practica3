@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Form
 from fastapi.responses import JSONResponse
 from celery import Celery
 
@@ -21,7 +21,10 @@ os.makedirs(INBOUND_DIR, exist_ok=True)
 os.makedirs(PROCESSED_DIR, exist_ok=True)
 
 @router.post("/upload")
-async def upload_csv(file: UploadFile = File(...)):
+async def upload_csv(
+    sensor_type: str = Form(...),
+    file: UploadFile = File(...)
+):
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Solo se aceptan archivos .csv")
 
@@ -37,7 +40,7 @@ async def upload_csv(file: UploadFile = File(...)):
     # mandar la ruta EXACTA que el worker también puede ver
     task = celery_app.send_task(
         "worker.tasks.procesar_csv",
-        args=[full_path]   # <-- /data/inbound/loquesea.csv
+        args=[full_path, sensor_type]   # <-- Pasamos la ruta y el tipo de sensor
     )
 
     return JSONResponse({

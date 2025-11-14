@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from routes import user
+from routes import user, upload, status, data
+from typing import List
+
 
 app = FastAPI(
     title="API de Monitoreo GAMC",
@@ -21,6 +23,37 @@ app.add_middleware(
     allow_headers=["*"],  # Permite todas las cabeceras
 )
 
-# Incluir el router de usuarios con el prefijo /api
-# Esto hará que la ruta /users/login esté disponible en /api/users/login
+# --- GESTIÓN DE WEBSOCKETS PARA NOTIFICACIONES EN TIEMPO REAL ---
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
+
+manager = ConnectionManager()
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Mantenemos la conexión abierta. En una app real, aquí se podría
+            # manejar la comunicación bidireccional.
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+
+# --- INCLUSIÓN DE RUTAS ---
 app.include_router(user.router, prefix="/api")
+app.include_router(upload.router, prefix="/api")
+app.include_router(status.router, prefix="/api")
+app.include_router(data.router, prefix="/api")

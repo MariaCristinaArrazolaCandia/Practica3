@@ -1,0 +1,88 @@
+1. CALIDAD DE AIRE
+
+Id: Representación numérica del registro
+devAddr: Registro de dispositivo
+deduplicationId: Id de entidad
+Time: Hora y fecha en la que en sensor envio el dato
+deviceInfo.classEnabled: Tipo de clase de dispositivo
+deviceinfo.tenantName: Empresa al que pertenece
+deviceinfo.tenantId: Id de la empresa que le pertenece
+deviceinfo.deviceProfileId: Id del perfil que decodificacion
+deviceinfo.applicationId: Id de la aplicación al que pertenece
+deviceinfo.deviceName: Nombre del dispositivo
+deviceinfo.applicatioName: Nombre de la aplicación 
+deviceinfo.devEui: Identification EUI del dispositivo
+deviceInfo.deviceProfileName: Nombre del perfil que está utilizando
+deviceInfo.Tag.description: Descripcion del sensor
+deviceInfo.Tag.Address: Calle en la que se encuentra instalado el sensor
+deviceInfo.Tag.name: Nombre del sensor
+Deviceinfo.tag.location: Latitud y logintud del sensor
+Txinfo: Datos de de la frecuencia en la que trabaja
+Fport: puerto de comunicación
+Data: Información recolectada pero codificada en base hex
+fcnt:Conteo de la comunicación realizada
+Confirmed: Información enviada en caso de que sea de evento “up confirmed data”
+Adr: Bandera de envío de datos en máxima velocidad
+dr:Tasa de transmision
+Object: Datos decodificados crudos para el uso
+
+2. DATOS SONIDO
+
+Id: Representación numérica del registro
+devAddr: Registro de dispositivo
+deduplicationId: Id de entidad
+Time: Hora y fecha en la que en sensor envio el dato
+deviceInfo.classEnabled: Tipo de clase de dispositivo
+deviceinfo.tenantName: Empresa al que pertenece
+deviceinfo.tenantId: Id de la empresa que le pertenece
+deviceinfo.deviceProfileId: Id del perfil que decodificacion
+deviceinfo.applicationId: Id de la aplicación al que pertenece
+deviceinfo.deviceName: Nombre del dispositivo
+deviceinfo.applicatioName: Nombre de la aplicación 
+deviceinfo.devEui: Identification EUI del dispositivo
+deviceInfo.deviceProfileName: Nombre del perfil que está utilizando
+deviceInfo.Tag.description: Descripcion del sensor
+deviceInfo.Tag.Address: Calle en la que se encuentra instalado el sensor
+deviceInfo.Tag.name: Nombre del sensor
+Deviceinfo.tag.location: Latitud y logintud del sensor
+Txinfo: Datos de de la frecuencia en la que trabaja
+Fport: puerto de comunicación
+Data: Información recolectada pero codificada en base hex
+fcnt:Conteo de la comunicación realizada
+Confirmed: Información enviada en caso de que sea de evento “up confirmed data”
+Adr: Bandera de envío de datos en máxima velocidad
+dr:Tasa de transmision
+Object: Datos decodificados crudos para el uso
+Object.laeq:Nivel de sonido registrado
+Object.lai: Promedio de nivel de sonido
+Object.laiMax: Maximo de pico de registro de nivel de sonido
+Object.Battery: Nivel de bateria
+Object.status: Estado de los niveles permitidos de sonido
+
+3. DATOS SOTERRADO
+
+Id: Representación numérica del registro
+devAddr: Registro de dispositivo
+deduplicationId: Id de entidad
+Time: Hora y fecha en la que en sensor envio el dato
+deviceInfo.classEnabled: Tipo de clase de dispositivo
+deviceinfo.tenantName: Empresa al que pertenece
+deviceinfo.tenantId: Id de la empresa que le pertenece
+deviceinfo.deviceProfileId: Id del perfil que decodificacion
+deviceinfo.applicationId: Id de la aplicación al que pertenece
+deviceinfo.deviceName: Nombre del dispositivo
+deviceinfo.applicatioName: Nombre de la aplicación 
+deviceinfo.devEui: Identification EUI del dispositivo
+deviceInfo.deviceProfileName: Nombre del perfil que está utilizando
+deviceInfo.Tag.description: Descripcion del sensor
+deviceInfo.Tag.Address: Calle en la que se encuentra instalado el sensor
+deviceInfo.Tag.name: Nombre del sensor
+Deviceinfo.tag.location: Latitud y logintud del sensor
+Txinfo: Datos de de la frecuencia en la que trabaja
+Fport: puerto de comunicación
+Data: Información recolectada pero codificada en base hex
+fcnt:Conteo de la comunicación realizada
+Confirmed: Información enviada en caso de que sea de evento “up confirmed data”
+Adr: Bandera de envío de datos en máxima velocidad
+dr:Tasa de transmision
+Object: Datos decodificados crudos para el uso
