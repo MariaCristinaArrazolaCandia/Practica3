@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import user, upload, status, data, ws
+from routes import user, upload, status, data, ws, notify
 
 app = FastAPI(
     title="API de Monitoreo GAMC",
@@ -42,3 +42,5 @@ app.include_router(data.router, prefix="/api")
 
 # Rutas WebSocket (sin /api, van directo desde la raíz)
 app.include_router(ws.router)
+
+app.include_router(notify.router)

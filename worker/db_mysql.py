@@ -1,12 +1,14 @@
+import mysql.connector
 from mysql.connector import Error
 
 MYSQL_CONFIG = {
-    "host": "mysql",              # nombre del servicio en docker-compose
+    "host": "mysql",              
     "port": 3306,
     "user": "root",
-    "password": "admin",
+    "password": "root123",
     "database": "sensor_monitoring",
 }
+
 
 def get_mysql_conn():
     try:

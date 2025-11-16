@@ -6,7 +6,8 @@ import UserManagement from './ejecutivo/user management/UserManagement';
 import UserForm from './ejecutivo/user management/UserForm';
 
 
-import WebSocketTest from "./WebSocketTest";
+import WebSocketNotifications from "./WebSocketNotifications";
+
 
 // URL base de tu backend. DEBES cambiar 'http://localhost:8080' por la URL/puerto real de tu servicio backend-1
 const API_BASE_URL = 'http://localhost:8070/api'; 
@@ -21,6 +22,65 @@ function App() {
     const [editingUser, setEditingUser] = useState(null); // Usuario que se está editando
     const [message, setMessage] = useState(''); // Mensajes de éxito o error
     const [isLoading, setIsLoading] = useState(false);
+
+    const [wsEventCounter, setWsEventCounter] = useState(0);
+const [toastMsg, setToastMsg] = useState(null);
+
+const handleWsMessage = useCallback((payload) => {
+  let messageText = "";
+  let shouldTriggerReload = false;
+
+  // Si el backend mandó texto plano:
+  if (typeof payload === "string") {
+    messageText = payload;
+    // Puedes decidir si eso recarga o no
+    shouldTriggerReload = true;
+  } else {
+    // Mensaje estructurado
+    switch (payload.type) {
+      case "CSV_COMPLETED": {
+        const s = payload.summary || {};
+        messageText =
+          payload.text ||
+          `CSV procesado: ${s.valid_rows ?? s.processed ?? 0} filas válidas, ` +
+            `${s.inserted_uplinks ?? 0} uplinks, ${s.sound_rows ?? 0} sonidos.`;
+        // Este sí queremos que dispare recarga de dashboards/tablas
+        shouldTriggerReload = true;
+        break;
+      }
+
+      case "USER_CREATED":
+        messageText = payload.text || "Nuevo usuario creado.";
+        shouldTriggerReload = true; // refrescar vista de usuarios
+        break;
+
+      case "USER_UPDATED":
+        messageText = payload.text || "Usuario actualizado.";
+        shouldTriggerReload = true;
+        break;
+
+      case "USER_DELETED":
+        messageText = payload.text || "Usuario eliminado.";
+        shouldTriggerReload = true;
+        break;
+
+      default:
+        messageText = payload.text || JSON.stringify(payload);
+        shouldTriggerReload = false;
+        break;
+    }
+  }
+
+  if (messageText) {
+    setToastMsg(messageText);
+    setTimeout(() => setToastMsg(null), 5000);
+  }
+
+  if (shouldTriggerReload) {
+    setWsEventCounter((prev) => prev + 1);
+  }
+}, []);
+
 
     const handleLoginSuccess = (data) => {
         // Guardamos el token en localStorage para persistir la sesión
@@ -194,12 +254,12 @@ function App() {
                     message={message}
                 />;
             case 'dashboard_ejecutivo':
-                return <DashboardEjecutivo user={user} onLogout={handleLogout} setView={setView} />;
+                return <DashboardEjecutivo user={user} onLogout={handleLogout} setView={setView} wsEventCounter={wsEventCounter} />;
             case 'dashboard_operativo':
                 // Pasamos setView para que el dashboard pueda navegar a otras vistas, como la de gestión de usuarios.
-                return <DashboardOperativo user={user} onLogout={handleLogout} setView={setView} />;
+                return <DashboardOperativo user={user} onLogout={handleLogout} setView={setView} wsEventCounter={wsEventCounter} />;
             case 'user_management':
-                return <UserManagement user={user} setView={setView} onEdit={handleEditClick} onDelete={handleDeleteUser} />;
+                return <UserManagement user={user} setView={setView} onEdit={handleEditClick} onDelete={handleDeleteUser} wsEventCounter={wsEventCounter} />;
             case 'user_create':
                 return <UserForm 
                     title="Registrar Nuevo Usuario"
@@ -230,12 +290,30 @@ function App() {
         }
     };
 
-    return (
+ return (
+
   <div className="min-h-screen bg-gray-50 font-sans antialiased">
     {renderContent()}
 
-    {/* WebSocket activo solo cuando el usuario está autenticado */}
-    {isAuthenticated && <WebSocketTest />}
+    {isAuthenticated && (
+      <>
+        <WebSocketNotifications onMessage={handleWsMessage} />
+
+        {toastMsg && (
+          <div className="fixed top-4 right-4 z-[9999] max-w-sm rounded-lg bg-white shadow-lg border border-gray-200 px-4 py-3 text-sm text-gray-800">
+            <div className="flex items-start">
+              <span className="mr-2 mt-0.5 text-green-500">✅</span>
+              <div>
+                <p className="font-semibold">Procesamiento completado</p>
+                <p className="text-xs text-gray-600 mt-1">
+                  {toastMsg}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
+    )}
   </div>
 );
 }

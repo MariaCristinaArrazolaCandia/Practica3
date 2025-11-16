@@ -1,11 +1,12 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from typing import List
+import json
 
 router = APIRouter()
 
+
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
+        self.active_connections: list[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
@@ -15,31 +16,34 @@ class ConnectionManager:
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
 
-    async def broadcast(self, message: str):
+    async def broadcast(self, message):
+        """
+        Envía un mensaje a todos los clientes conectados.
+        - Si message es dict, se envía como JSON.
+        - Si es str u otra cosa, se convierte a string.
+        """
+        if isinstance(message, dict):
+            payload = json.dumps(message, default=str)
+        else:
+            payload = str(message)
+
         for connection in list(self.active_connections):
             try:
-                await connection.send_text(message)
+                await connection.send_text(payload)
             except Exception:
-                # si falla, la sacamos de la lista
+                # Si falla, desconectamos esa conexión
                 self.disconnect(connection)
 
 
-# 👇 ESTA es la instancia que usarán otros módulos
 manager = ConnectionManager()
 
 
 @router.websocket("/ws/notifications")
 async def websocket_notifications(websocket: WebSocket):
-    """
-    WebSocket básico:
-    - URL: ws://localhost:8070/ws/notifications
-    - Por ahora solo hace echo de lo que recibe.
-    """
     await manager.connect(websocket)
     try:
         while True:
-            data = await websocket.receive_text()
-            # echo simple
-            await websocket.send_text(f"Echo desde backend: {data}")
+            # Leemos algo del cliente solo para mantener viva la conexión
+            await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)

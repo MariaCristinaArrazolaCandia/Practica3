@@ -51,14 +51,13 @@ services:
   mysql:
     image: mysql:8
     environment:
-       MYSQL_ROOT_PASSWORD: admin
-       MYSQL_DATABASE: sensor_monitoring
-       MYSQL_USER: root
-       MYSQL_PASSWORD: root123
-    ports:
-      - "3307:3306"  # mapeo a 3307 para evitar conflictos si tienes MySQL local
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: sensor_monitoring
     volumes:
       - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"  # mapeo a 3307 para evitar conflictos si tienes MySQL local
+
 
   mongo:
     image: mongo:6

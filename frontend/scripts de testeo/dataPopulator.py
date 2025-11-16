@@ -4,7 +4,7 @@ from pymongo import MongoClient
 
 # --- Detalles de Conexión a MongoDB ---
 # Asegúrate de que esta URI de conexión sea la correcta para tu clúster.
-MONGO_URI = "mongodb+srv://mariaarrazolacom:bvwBTVTrjHX3N22V@client-server.jie5l.mongodb.net/"
+MONGO_URI = "mongodb://localhost:27017"
 DATABASE_NAME = "EMERGENTES_Monitoreo_GAMC"
 COLLECTION_NAME = "users"
 

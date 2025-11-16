@@ -38,6 +38,12 @@ function UserManagement({ user, setView, onEdit, onDelete }) {
     useEffect(() => {
         fetchUsers();
     }, [fetchUsers]);
+    
+    useEffect(() => {
+    if (wsEventCounter > 0) {
+      fetchUsers();
+    }
+  }, [wsEventCounter]);
 
     const goBackToDashboard = () => {
         if (user.role === 'Ejecutivo') {

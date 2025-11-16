@@ -65,7 +65,8 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer", "user_info": user_info}
 
 # Esquema de seguridad para obtener el token de la cabecera
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
+
 
 @router.get("", response_model=List[UserInDB])
 def read_users(token: str = Depends(oauth2_scheme)):

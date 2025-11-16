@@ -1,8 +1,16 @@
 from fastapi import APIRouter
 from celery import Celery
 from fastapi.responses import JSONResponse
+from routes.ws import manager
 
-router = APIRouter(tags=["status"])
+router = APIRouter(tags=["notify"])
+
+@router.post("/notify/csv-completed")
+async def notify_csv_completed(summary: dict):
+    # summary puede ser el status devuelto por el worker
+    msg = f"CSV procesado: {summary.get('inserted_uplinks', 0)} uplinks, {summary.get('sound_rows', 0)} sonidos"
+    await manager.broadcast(msg)
+    return {"ok": True}
 
 # Tiene que coincidir con la config Celery del backend
 celery_app = Celery(
